@@ -3,18 +3,12 @@ Filter Embed and iFrames to see if they are not https and give warning to user.
 
 [![Build Status](https://travis-ci.org/hitteshahuja/filter_bath_https_monitor.svg?branch=master)](https://travis-ci.org/hitteshahuja/filter_bath_https_monitor)
 
-**Install the plugin**
-Under your Moodle installation, under filters folder : 
-1. git clone https://github.com/hitteshahuja/filter_bath_https_monitor.git
+##Install the plugin
+1. Unpack the plugin into /filter/bath_https_filter within your Moodle install.
+2. From the Moodle Administration block, expand Site Administration and click "Notifications".
+3. Follow the on-screen instructions to install the plugin.
  
- OR 
- 2. Download zip from github
- 
- Extract the files under the filter/ folder of your moodle installation
- 
-Go to Site Administration > Notifications and install the plugin
-
-**Configure**
+##Configure
 
 Once installed successfully,you can configure the plugin under Site Administration > Plugins >  Filters >  HTTPS Monitor > Settings
  
