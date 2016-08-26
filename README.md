@@ -1,5 +1,5 @@
 # filter_bath_https_monitor
-Filter Embed and iFrames to see if they are not https and give warning to user.
+Filter Embed and iFrames to see if they are not https and give appropriate warning to user.
 
 [![Build Status](https://travis-ci.org/hitteshahuja/filter_bath_https_monitor.svg?branch=master)](https://travis-ci.org/hitteshahuja/filter_bath_https_monitor)
 
@@ -16,3 +16,7 @@ Once installed successfully,you can configure the plugin under Site Administrati
  Use this option to give your own custom message to be used throughout the site
  2. **Message type**: Follows bootstrap label css options listed here: http://getbootstrap.com/components/#labels
  3. **Position**: Display message before or after the embed/ iframe  
+ 
+##Screenshots
+![alt text](https://moodle.org/pluginfile.php/50/local_plugins/plugin_screenshots/1700/screenshot-preview1.png "Screenshot 1")
+![alt text](https://moodle.org/pluginfile.php/50/local_plugins/plugin_screenshots/1700/screenshot-settings.png "Screenshot 2")
