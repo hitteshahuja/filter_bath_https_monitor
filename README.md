@@ -19,4 +19,5 @@ Once installed successfully,you can configure the plugin under Site Administrati
  
 ##Screenshots
 ![alt text](https://moodle.org/pluginfile.php/50/local_plugins/plugin_screenshots/1700/screenshot-preview1.png "Screenshot 1")
+
 ![alt text](https://moodle.org/pluginfile.php/50/local_plugins/plugin_screenshots/1700/screenshot-settings.png "Screenshot 2")
