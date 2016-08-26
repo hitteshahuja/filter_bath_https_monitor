@@ -39,9 +39,9 @@ class filter_bath_https_monitor extends filter_mediaplugin
      * @return string
      */
     public function filter($text, array $options = array()) {
-        /*if (!is_https()) {
+        if (!is_https()) {
             return $text;
-        }*/
+        }
         $message = get_config('filter_bath_https_monitor', 'https_message');
         $bslabel = get_config('filter_bath_https_monitor', 'https_message_type');
         $position = get_config('filter_bath_https_monitor', 'https_message_position');
