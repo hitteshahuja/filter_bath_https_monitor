@@ -12,6 +12,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2016081500;
-$plugin->requires = 2015111604.00;  // Requires this Moodle version
+$plugin->requires = 2015111604.00;  // Requires this Moodle version.
 $plugin->component = 'filter_bath_https_monitor';
 
