@@ -45,12 +45,12 @@ class filter_bath_https_monitor extends filter_mediaplugin
             return $text;
         }*/
         $message = get_config('filter_bath_https_monitor', 'https_message');
-        $bsLabel = get_config('filter_bath_https_monitor', 'https_message_type');
+        $bslabel = get_config('filter_bath_https_monitor', 'https_message_type');
         $position = get_config('filter_bath_https_monitor', 'https_message_position');
         if ($message == '') {
-            $httpsWarningLabel = "<p class='label label-$bsLabel'>" . self::MESSAGE . "</p>";
+            $httpswarninglabel = "<p class='label label-$bslabel'>" . self::MESSAGE . "</p>";
         } else {
-            $httpsWarningLabel = "<p class='label label-$bsLabel'>" . $message . "</p>";
+            $httpswarninglabel = "<p class='label label-$bslabel'>" . $message . "</p>";
         }
         $newtext = $text;
         if (!is_string($text) or empty($text)) {
@@ -63,9 +63,9 @@ class filter_bath_https_monitor extends filter_mediaplugin
         if (preg_match($re1, $text) || preg_match($re2, $text)) {
             if (stripos($text, "https://") === false) {
                 if ($position == 0) {
-                    $newtext = $httpsWarningLabel . $text;
+                    $newtext = $httpswarninglabel . $text;
                 } else {
-                    $newtext = $text . $httpsWarningLabel;
+                    $newtext = $text . $httpswarninglabel;
 
                 }
 
