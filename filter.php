@@ -1,11 +1,33 @@
 <?php
 
+/**
+ * Class filter_bath_https_monitor
+ */
 class filter_bath_https_monitor extends filter_mediaplugin
 {
+    /**
+     * Default message if not set by the admin
+     */
+    const MESSAGE = 'Make sure embedded content on this site is HTTPS';
 
+    /**
+     * @param $text
+     * @param array $options
+     * @return string
+     */
     public function filter($text, array $options = array()) {
         global $CFG, $PAGE;
-        $https_warning_label = "<p class='label label-warning'>naughty ! naughty ! you need to it be https</p>";
+        /*if (!is_https()) {
+            return $text;
+        }*/
+        $message = get_config('filter_bath_https_monitor', 'https_message');
+        $bs_label = get_config('filter_bath_https_monitor', 'https_message_type');
+        $position = get_config('filter_bath_https_monitor', 'https_message_position');
+        if ($message == '') {
+            $https_warning_label = "<p class='label label-$bs_label'>" . self::MESSAGE . "</p>";
+        } else {
+            $https_warning_label = "<p class='label label-$bs_label'>" . $message . "</p>";
+        }
         $newtext = $text;
         if (!is_string($text) or empty($text)) {
             // non string data can not be filtered anyway
@@ -14,20 +36,17 @@ class filter_bath_https_monitor extends filter_mediaplugin
         $re1 = "~<iframe[^>]+>.*?</iframe>~i";
         $re2 = "~<embed[^>]+>.*?</embed>~i";
         //Dont bother if the site is not https to begin with
-        $is_https = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? true : false;
-        if (!$is_https) {
-            //return $text;
-        }
-        if (preg_match($re, $text)) {
+        if (preg_match($re1, $text) || preg_match($re2, $text)) {
             if (stripos($text, "https://") === false) {
-                //echo "naughty ! naughty ! you need to it be https";
-                $newtext = $https_warning_label . $text;
+                if ($position == 0) {
+                    $newtext = $https_warning_label . $text;
+                } else {
+                    $newtext = $text . $https_warning_label;
+
+                }
+
             }
         }
         return $newtext;
-    }
-
-    protected function find_https_links() {
-
     }
 }
