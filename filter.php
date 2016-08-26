@@ -40,7 +40,6 @@ class filter_bath_https_monitor extends filter_mediaplugin
      * @return string
      */
     public function filter($text, array $options = array()) {
-        global $CFG, $PAGE;
         /*if (!is_https()) {
             return $text;
         }*/
