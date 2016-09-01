@@ -95,11 +95,11 @@ class filter_bath_https_monitor extends filter_mediaplugin
      */
     private function get_embed_src($text, $type) {
         $src = '';
-        $embed_code = simplexml_load_string($text);
+        $embedcode = simplexml_load_string($text);
         if ($type == 'iframe') {
-            $src = (string)$embed_code->iframe['src'];
+            $src = (string)$embedcode->iframe['src'];
         } elseif ($type == 'embed') {
-            $src = (string)$embed_code->embed['src'];
+            $src = (string)$embedcode->embed['src'];
         }
         return $src;
     }
