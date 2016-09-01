@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
+
 /**
  * Class filter_bath_https_monitor
  */
@@ -39,7 +40,20 @@ class filter_bath_https_monitor extends filter_mediaplugin
      * @return string
      */
     public function filter($text, array $options = array()) {
-        if (!is_https()) {
+        global $COURSE;
+        $re1 = "~<iframe[^>]+>.*?</iframe>~i";
+        $re2 = "~<embed[^>]+>.*?</embed>~i";
+        $context = context_course::instance($COURSE->id);
+        $embedtype = '';
+        $match = false;
+        $newtext = $text;
+        // Dont bother if site is https
+        // Dont bother if does not have the right capability
+        if (!has_capability('moodle/course:update', $context) || is_https()) {
+            return $text;
+        }
+        if (!is_string($text) or empty($text)) {
+            // Non string data can not be filtered anyway.
             return $text;
         }
         $message = get_config('filter_bath_https_monitor', 'https_message');
@@ -50,16 +64,19 @@ class filter_bath_https_monitor extends filter_mediaplugin
         } else {
             $httpswarninglabel = "<p class='label label-$bslabel'>" . $message . "</p>";
         }
-        $newtext = $text;
-        if (!is_string($text) or empty($text)) {
-            // Non string data can not be filtered anyway.
-            return $text;
+        if (preg_match($re1, $text)) {
+            $embedtype = 'iframe';
+            $match = true;
         }
-        $re1 = "~<iframe[^>]+>.*?</iframe>~i";
-        $re2 = "~<embed[^>]+>.*?</embed>~i";
-        // Dont bother if the site is not https to begin with.
-        if (preg_match($re1, $text) || preg_match($re2, $text)) {
-            if (stripos($text, "https://") === false) {
+        if (preg_match($re2, $text)) {
+            $type = 'embed';
+            $match = true;
+        }
+        if ($match) {
+            // Get iframe SRC
+            $url = parse_url($this->get_embed_src($text, $embedtype), PHP_URL_SCHEME);
+            // Only do the magic if URL is HTTP
+            if (stripos($text, "https://") === false && !empty($url) && $url == 'http') {
                 if ($position == 0) {
                     $newtext = $httpswarninglabel . $text;
                 } else {
@@ -70,5 +87,20 @@ class filter_bath_https_monitor extends filter_mediaplugin
             }
         }
         return $newtext;
+    }
+
+    /** Return source of the embed code
+     * @param $text
+     * @return string
+     */
+    private function get_embed_src($text, $type) {
+        $src = '';
+        $embed_code = simplexml_load_string($text);
+        if ($type == 'iframe') {
+            $src = (string)$embed_code->iframe['src'];
+        } elseif ($type == 'embed') {
+            $src = (string)$embed_code->embed['src'];
+        }
+        return $src;
     }
 }
