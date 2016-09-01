@@ -98,7 +98,7 @@ class filter_bath_https_monitor extends filter_mediaplugin
         $embedcode = simplexml_load_string($text);
         if ($type == 'iframe') {
             $src = (string)$embedcode->iframe['src'];
-        } elseif ($type == 'embed') {
+        } else if ($type == 'embed') {
             $src = (string)$embedcode->embed['src'];
         }
         return $src;
