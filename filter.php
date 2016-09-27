@@ -40,9 +40,9 @@ class filter_bath_https_monitor extends moodle_text_filter
      * @return string
      */
     public function filter($text, array $options = array()) {
-        global $COURSE, $regular_expressions;
+        global $COURSE, $regularexpressions;
         $embedtype = '';
-        $embed_types = array('iframe', 'embed'); // Add more as we go along..
+        $embedtypes = array('embed', 'iframe'); // Add more as we go along..
         $match = false;
         $newtext = $text;
         $context = context_course::instance($COURSE->id);
@@ -53,16 +53,16 @@ class filter_bath_https_monitor extends moodle_text_filter
         // Dont bother if site is not https
         // Dont bother if does not have the right capability
         if (!has_capability('moodle/course:update', $context) || !is_https()) {
-            return $text;
+            //return $text;
         }
 
-        foreach ($embed_types as $type) {
-            $regular_expressions[$type] = "~.*?<" . $type . "[^>]+>.*?</" . $type . ">~i";
+        foreach ($embedtypes as $type) {
+            $regularexpressions[$type] = "~.*?<" . $type . "[^>]+>.*?</" . $type . ">~i";
             if (strpos($text, $type) === false) {
                 return $text;
             }
         }
-        foreach ($regular_expressions as $type => $regex) {
+        foreach ($regularexpressions as $type => $regex) {
             if (preg_match($regex, $text)) {
                 $embedtype = $type;
                 $match = true;
@@ -78,9 +78,9 @@ class filter_bath_https_monitor extends moodle_text_filter
         }
 
         if ($match) {
-            // Get iframe SRC
+            // Get iframe SRC.
             $url = parse_url($this->get_embed_src($text, $embedtype), PHP_URL_SCHEME);
-            // Only do the magic if URL is HTTP
+            // Only do the magic if URL is HTTP.
             if (stripos($text, "https://") === false && !empty($url) && $url == 'http') {
                 if ($position == 0) {
                     $newtext = $httpswarninglabel . $text;
