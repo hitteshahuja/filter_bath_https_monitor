@@ -53,7 +53,7 @@ class filter_bath_https_monitor extends moodle_text_filter
         // Dont bother if site is not https
         // Dont bother if does not have the right capability
         if (!has_capability('moodle/course:update', $context) || !is_https()) {
-            //return $text;
+            return $text;
         }
 
         foreach ($embedtypes as $type) {
