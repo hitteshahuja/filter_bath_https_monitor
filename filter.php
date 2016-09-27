@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class filter_bath_https_monitor
  */
-class filter_bath_https_monitor extends filter_mediaplugin
+class filter_bath_https_monitor extends moodle_text_filter
 {
     /**
      * Default message if not set by the admin
@@ -40,21 +40,33 @@ class filter_bath_https_monitor extends filter_mediaplugin
      * @return string
      */
     public function filter($text, array $options = array()) {
-        global $COURSE;
-        $re1 = "~<iframe[^>]+>.*?</iframe>~i";
-        $re2 = "~<embed[^>]+>.*?</embed>~i";
-        $context = context_course::instance($COURSE->id);
+        global $COURSE, $regular_expressions;
         $embedtype = '';
+        $embed_types = array('iframe', 'embed'); // Add more as we go along..
         $match = false;
         $newtext = $text;
-        // Dont bother if site is https
-        // Dont bother if does not have the right capability
-        if (!has_capability('moodle/course:update', $context) || is_https()) {
-            return $text;
-        }
+        $context = context_course::instance($COURSE->id);
         if (!is_string($text) or empty($text)) {
             // Non string data can not be filtered anyway.
             return $text;
+        }
+        // Dont bother if site is not https
+        // Dont bother if does not have the right capability
+        if (!has_capability('moodle/course:update', $context) || !is_https()) {
+            return $text;
+        }
+
+        foreach ($embed_types as $type) {
+            $regular_expressions[$type] = "~.*?<" . $type . "[^>]+>.*?</" . $type . ">~i";
+            if (strpos($text, $type) === false) {
+                return $text;
+            }
+        }
+        foreach ($regular_expressions as $type => $regex) {
+            if (preg_match($regex, $text)) {
+                $embedtype = $type;
+                $match = true;
+            }
         }
         $message = get_config('filter_bath_https_monitor', 'https_message');
         $bslabel = get_config('filter_bath_https_monitor', 'https_message_type');
@@ -64,14 +76,7 @@ class filter_bath_https_monitor extends filter_mediaplugin
         } else {
             $httpswarninglabel = "<p class='label label-$bslabel'>" . $message . "</p>";
         }
-        if (preg_match($re1, $text)) {
-            $embedtype = 'iframe';
-            $match = true;
-        }
-        if (preg_match($re2, $text)) {
-            $type = 'embed';
-            $match = true;
-        }
+
         if ($match) {
             // Get iframe SRC
             $url = parse_url($this->get_embed_src($text, $embedtype), PHP_URL_SCHEME);
