@@ -55,19 +55,20 @@ class filter_bath_https_monitor extends moodle_text_filter
         if (!has_capability('moodle/course:update', $context) || !is_https()) {
             return $text;
         }
-
         foreach ($embedtypes as $type) {
             $regularexpressions[$type] = "~.*?<" . $type . "[^>]+>.*?</" . $type . ">~i";
             if (strpos($text, $type) === false) {
                 return $text;
             }
         }
+
         foreach ($regularexpressions as $type => $regex) {
             if (preg_match($regex, $text)) {
                 $embedtype = $type;
                 $match = true;
             }
         }
+
         $message = get_config('filter_bath_https_monitor', 'https_message');
         $bslabel = get_config('filter_bath_https_monitor', 'https_message_type');
         $position = get_config('filter_bath_https_monitor', 'https_message_position');
@@ -100,12 +101,33 @@ class filter_bath_https_monitor extends moodle_text_filter
      */
     private function get_embed_src($text, $type) {
         $src = '';
-        $embedcode = simplexml_load_string($text);
-        if ($type == 'iframe') {
-            $src = (string)$embedcode->iframe['src'];
-        } else if ($type == 'embed') {
-            $src = (string)$embedcode->embed['src'];
+        $doc = new DOMDocument();
+        $doc->loadHTML($text);
+        $embedcode = simplexml_import_dom($doc);
+        foreach (get_object_vars($embedcode) as $body => $objects) {
+            if ($type == 'iframe') {
+                if (property_exists($objects, 'iframe')) {
+                    foreach ($objects->iframe->attributes() as $name => $value) {
+                        if ($name == 'src') {
+                            $src = (string)$value;
+                        }
+                    }
+                } else if (property_exists($objects, 'div')) {
+                    foreach ($objects->div->children() as $name => $value) {
+                        if ($name == 'iframe') {
+                            $src = (string)$value->attributes()['src'];
+                        }
+                    }
+                }
+
+            } else if ($type == 'embed') {
+                $src = (string)$embedcode->embed['src'];
+            } else if ($type == '@attributes') {
+                $src = (string)$type['src'];
+            }
+
         }
+
         return $src;
     }
 }
